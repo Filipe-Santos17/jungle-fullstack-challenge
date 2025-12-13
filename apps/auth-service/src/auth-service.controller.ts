@@ -1,12 +1,26 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+
+import { LoginRequest, RegisterRequest } from '@app/packages';
+
 import { AuthServiceService } from './auth-service.service';
 
 @Controller()
 export class AuthServiceController {
-  constructor(private readonly authServiceService: AuthServiceService) {}
+  constructor(private readonly authServiceService: AuthServiceService) { }
 
-  @Get()
-  getHello(): string {
-    return this.authServiceService.getHello();
+  @MessagePattern("auth_login")
+  signIn(@Payload() userLogin: LoginRequest) {
+    return this.authServiceService.signInLogin(userLogin);
+  }
+
+  @MessagePattern("auth_register")
+  register(@Payload() userRegister: RegisterRequest) {
+    return this.authServiceService.registerAuth(userRegister);
+  }
+
+  @MessagePattern("auth_refresh")
+  refreshToken(@Payload() userRegister: RegisterRequest) {
+    return this.authServiceService.registerAuth(userRegister);
   }
 }

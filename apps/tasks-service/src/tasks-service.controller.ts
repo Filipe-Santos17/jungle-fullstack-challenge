@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
 import { TasksService } from './tasks-service.service';
-import { CreateTaskRequest } from '../../../packages/src/dtos/tasks/task.request';
+import { CreateTaskRequest } from '@app/packages';
 
 @Controller()
 export class TasksServiceController {
