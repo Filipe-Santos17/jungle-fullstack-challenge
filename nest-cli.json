@@ -37,6 +37,15 @@
         "tsConfigPath": "apps/notifications-service/tsconfig.app.json"
       }
     },
+    "packages": {
+      "type": "library",
+      "root": "packages",
+      "entryFile": "index",
+      "sourceRoot": "packages/src",
+      "compilerOptions": {
+        "tsConfigPath": "packages/tsconfig.lib.json"
+      }
+    },
     "tasks-service": {
       "type": "application",
       "root": "apps/tasks-service",

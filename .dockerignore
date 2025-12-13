@@ -1,0 +1,22 @@
+# Dependencies (installed in container)
+node_modules/
+
+# Build outputs (built in container)
+dist/
+build/
+
+# Environment files
+.env
+.env.*
+
+# Development files and configs
+.git/
+.gitignore
+.vscode/
+*.log
+coverage/
+npm-debug.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
