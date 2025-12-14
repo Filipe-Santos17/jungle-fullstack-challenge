@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTaskRequest } from '../../../packages/src/dtos/tasks/task.request';
+import { CreateTaskRequest } from '@app/packages';
 
 @Injectable()
 export class TasksService {
