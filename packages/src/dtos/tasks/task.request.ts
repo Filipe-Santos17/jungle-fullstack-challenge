@@ -1,6 +1,7 @@
 // Atribuição a múltiplos usuários. - id e tabela intermediaria
 // Comentários: criar e listar em cada tarefa.
-import { IsString, IsNotEmpty, IsDate, IsEnum } from "class-validator"
+import { PartialType } from '@nestjs/mapped-types';
+import { IsString, IsNotEmpty, IsDate, IsEnum, IsInt } from "class-validator"
 import { Type } from 'class-transformer';
 
 enum taskPriority {
@@ -20,10 +21,10 @@ enum taskStatus {
 export class CreateTaskRequest {
   @IsString()
   @IsNotEmpty()
-  título: string;
+  titulo: string;
 
   @IsString()
-  descrição: string;
+  descricao: string;
 
   @Type(() => Date)
   @IsDate()
@@ -35,4 +36,55 @@ export class CreateTaskRequest {
 
   @IsEnum(taskStatus, { message: "O status deve ser uma das seguintes opções: todo, in_progress, review, done" })
   status: string;
+
+  @IsString()
+  @IsNotEmpty()
+  user_id: string;
+}
+
+export class ParamsGetTaskRequest {
+  @IsInt()
+  page: number;
+
+  @IsInt()
+  size: number;
+
+  @IsString()
+  @IsNotEmpty()
+  userId: string;
+}
+
+export class TaskRequest {
+  @IsString()
+  id: string;
+
+  @IsString()
+  titulo: string;
+
+  @IsString()
+  descricao: string;
+
+  @IsDate()
+  prazo: string;
+
+  @IsString()
+  prioridade: string;
+
+  @IsString()
+  status: string;
+
+  @IsDate()
+  created_at: string;
+
+  @IsDate()
+  updated_at: string;
+}
+
+export class UpdateTaskRequest extends PartialType(CreateTaskRequest) { }
+
+export class ParamUpdateTaskRequest {
+  @IsString()
+  id: string;
+
+  task: UpdateTaskRequest;
 }

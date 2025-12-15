@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from "@nestjs/jwt"
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import Joi from 'joi';
 
 import { AuthServiceController } from './auth-service.controller';
 import { AuthServiceService } from './auth-service.service';
+
+import { DbModule, EntityUsers, EntityRefreshToken } from '@app/packages';
 
 @Module({
   imports: [
@@ -12,6 +15,9 @@ import { AuthServiceService } from './auth-service.service';
       isGlobal: true,
       validationSchema: Joi.object({
         JWT_SECRET: Joi.string().required(),
+        SALT_OR_ROUNDS: Joi.string().required(),
+        JWT_EXPIRATION_MINUTES: Joi.string().required(),
+        JWT_REFRESH_EXPIRATION_DAYS: Joi.string().required(),
         RABBIT_MQ_URI: Joi.string().required(),
         RABBIT_MQ_AUTH_ENV: Joi.string().required(),
       }),
@@ -22,10 +28,12 @@ import { AuthServiceService } from './auth-service.service';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>("JWT_SECRET"),
-        signOptions: { expiresIn: 60 * 15,  },
+        signOptions: { expiresIn: 60 * 15, },
       }),
       inject: [ConfigService]
-    })
+    }),
+    DbModule,
+    TypeOrmModule.forFeature([EntityUsers, EntityRefreshToken]),
   ],
   controllers: [AuthServiceController],
   providers: [AuthServiceService],

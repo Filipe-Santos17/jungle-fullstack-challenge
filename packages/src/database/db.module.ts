@@ -4,6 +4,10 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { DbService } from "./db.service";
 
+import { EntityUsers } from "./entities/user.entitie";
+import { EntityTasks } from "./entities/task.entitie";
+import { EntityRefreshToken } from "./entities/refresh-token.entitie";
+
 @Module({
     imports: [
         TypeOrmModule.forRootAsync({
@@ -15,8 +19,8 @@ import { DbService } from "./db.service";
                 username: configService.get<string>("USERNAME_DB"),
                 password: configService.get<string>("PASSWORD_DB"),
                 database: configService.get<string>("DATABASE_DB"),
-                entities: [__dirname + "./entities"],
-                migrations: [__dirname + "./migrations"],
+                entities: [EntityUsers, EntityTasks, EntityRefreshToken],
+                migrations: [__dirname + "/migrations"],
                 synchronize: false,
             }),
         }),

@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
-import { LoginRequest, RegisterRequest } from '@app/packages';
+import { LoginRequest, RefreshRequest, RegisterRequest } from '@app/packages';
 
 import { AuthServiceService } from './auth-service.service';
 
@@ -20,7 +20,7 @@ export class AuthServiceController {
   }
 
   @MessagePattern("auth_refresh")
-  refreshToken(@Payload() userRegister: RegisterRequest) {
-    return this.authServiceService.registerAuth(userRegister);
+  refreshToken(@Payload() token: RefreshRequest) {
+    return this.authServiceService.refreshAuth(token);
   }
 }

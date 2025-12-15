@@ -1,6 +1,10 @@
-@baseUrl = http://localhost:3001/
+@baseUrl = http://localhost:3010/
+@token_login = {{login.response.body.token}}
+@user_id = {{login.response.body.user.id}}
+@first_task_id = d39aa616-aa89-4d61-bb22-93dd5c51053c
 
 ### Auth
+
 # @name login
 POST {{baseUrl}}api/auth/login
 Content-Type: application/json
@@ -22,16 +26,62 @@ Content-Type: application/json
     "password": "password"
 }
 
+### 
+
+# @name refresh
+POST {{baseUrl}}api/auth/refresh
+Content-Type: application/json
+Authorization: Bearer {{token_login}}
+
 ### Tasks
 
-# @name createTask
+# @name create_task
 POST {{baseUrl}}api/tasks
 Content-Type: application/json
+Authorization: Bearer {{token_login}}
 
 {
-    "título": "Teste",
-    "descrição": "string",
+    "titulo": "Teste",
+    "descricao": "string",
     "prazo": "2025-12-14T00:25:11.980Z",
     "prioridade": "urgent",
-    "status": "review"
+    "status": "review",
+    "user_id": "{{user_id}}"
 }
+
+###
+
+# @name get_all_tasks
+GET {{baseUrl}}api/tasks
+Content-Type: application/json
+Authorization: Bearer {{token_login}}
+
+###
+
+# @name get_one_task_by_id
+GET {{baseUrl}}api/tasks/{{first_task_id}}
+Content-Type: application/json
+Authorization: Bearer {{token_login}}
+
+###
+
+# @name updateTask
+PUT {{baseUrl}}api/tasks/{{first_task_id}}
+Content-Type: application/json
+Authorization: Bearer {{token_login}}
+
+{
+    "titulo": "Teste",
+    "descricao": "string",
+    "prazo": "2025-12-14T00:25:11.980Z",
+    "prioridade": "urgent",
+    "status": "review",
+    "user_id": "{{user_id}}"
+}
+
+###
+
+# @name deleteTask
+DELETE {{baseUrl}}api/tasks/{{first_task_id}}
+Content-Type: application/json
+Authorization: Bearer {{token_login}}

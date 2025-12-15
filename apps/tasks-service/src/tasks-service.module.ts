@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 
 import { TasksServiceController } from './tasks-service.controller';
 import { TasksService } from './tasks-service.service';
-import { DbModule } from '@app/packages';
+import { DbModule, EntityTasks } from '@app/packages';
+
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { DbModule } from '@app/packages';
       envFilePath: "./apps/tasks-service/.env"
     }),
     DbModule,
+    TypeOrmModule.forFeature([EntityTasks])
   ],
   controllers: [TasksServiceController],
   providers: [TasksService],

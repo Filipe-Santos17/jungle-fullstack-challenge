@@ -1,9 +1,9 @@
-import { Controller, Post, Body, Header, Response } from "@nestjs/common"
+import { Controller, Post, Body, Req, UnauthorizedException } from "@nestjs/common"
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
+import type { Request } from "express";
 
-import { RmqService } from '@app/packages';
-import { LoginRequest, RegisterRequest, } from '@app/packages';
+import { LoginRequest, RegisterRequest, RmqService } from '@app/packages';
 
 @Controller("/api/auth")
 export class AuthController {
@@ -27,10 +27,14 @@ export class AuthController {
         )
     }
 
-    // @Post("refresh")
-    // async refreshTokenUser() {
-    //     return await lastValueFrom(
-    //         this.client.send("auth_refresh", task)
-    //     )
-    // }
+    @Post("refresh")
+    async refreshTokenUser(@Req() req: Request) {
+        const token = {
+            refresh_token: req.cookies['refresh_token']
+        } 
+
+        return await lastValueFrom(
+            this.client.send("auth_refresh", token)
+        )
+    }
 }

@@ -7,10 +7,11 @@ export class UserTable1765681714560 implements MigrationInterface {
 
         await queryRunner.query(`
             CREATE TABLE users (
-                id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+                id uuid DEFAULT gen_random_uuid(),
                 email VARCHAR(255) UNIQUE NOT NULL, 
                 username VARCHAR(255) NOT NULL, 
-                password VARCHAR(255) NOT NULL
+                password VARCHAR(255) NOT NULL,
+                CONSTRAINT users_key_id PRIMARY KEY (id)
             );
         `);
     }

@@ -31,6 +31,8 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3001
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=100
     restart: always
     depends_on:
       db:
