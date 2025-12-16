@@ -6,7 +6,7 @@ import * as Joi from 'joi';
 import { TasksServiceController } from './tasks-service.controller';
 import { TasksService } from './tasks-service.service';
 
-import { DbModule, EntityComment, EntityTasks } from '@app/packages';
+import { DbModule, EntityComments, EntityTasks } from '@app/packages';
 
 @Module({
   imports: [
@@ -27,7 +27,7 @@ import { DbModule, EntityComment, EntityTasks } from '@app/packages';
       envFilePath: "./apps/tasks-service/.env"
     }),
     DbModule,
-    TypeOrmModule.forFeature([EntityTasks, EntityComment])
+    TypeOrmModule.forFeature([EntityTasks, EntityComments])
   ],
   controllers: [TasksServiceController],
   providers: [TasksService],

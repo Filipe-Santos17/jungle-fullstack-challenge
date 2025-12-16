@@ -67,7 +67,7 @@ export class TaskController {
     @Param("id") id: string
   ) {
     return await lastValueFrom(
-      this.client.emit("task_deleteone", { id })
+      this.client.send("task_deleteone", { id })
     )
   }
 
@@ -79,7 +79,7 @@ export class TaskController {
     @Body() comment: CreateCommentRequest,
   ) {
     return await lastValueFrom(
-      this.client.emit("task_create_comment", { taskId: id, userId, comment })
+      this.client.send("task_create_comment", { taskId: id, userId, comment })
     )
   }
 
@@ -91,7 +91,7 @@ export class TaskController {
     @Query("size") size: number,
   ) {
     return await lastValueFrom(
-      this.client.emit("task_getall_comments", { taskId: id, page, size })
+      this.client.send("task_getall_comments", { taskId: id, page, size })
     )
   }
 }

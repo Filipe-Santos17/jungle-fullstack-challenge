@@ -7,6 +7,7 @@ import { DbService } from "./db.service";
 import { EntityUsers } from "./entities/user.entitie";
 import { EntityTasks } from "./entities/task.entitie";
 import { EntityRefreshToken } from "./entities/refresh-token.entitie";
+import { EntityComments } from "./entities/comment.entitie";
 
 @Module({
     imports: [
@@ -19,7 +20,7 @@ import { EntityRefreshToken } from "./entities/refresh-token.entitie";
                 username: configService.get<string>("USERNAME_DB"),
                 password: configService.get<string>("PASSWORD_DB"),
                 database: configService.get<string>("DATABASE_DB"),
-                entities: [EntityUsers, EntityTasks, EntityRefreshToken],
+                entities: [EntityUsers, EntityTasks, EntityRefreshToken, EntityComments],
                 migrations: [__dirname + "/migrations"],
                 synchronize: false,
             }),

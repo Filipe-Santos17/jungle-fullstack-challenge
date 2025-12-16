@@ -1,7 +1,7 @@
 @baseUrl = http://localhost:3010/
 @token_login = {{login.response.body.token}}
 @user_id = {{login.response.body.user.id}}
-@first_task_id = ee2f1357-be5f-47aa-bc07-a04ac06683ac
+@first_task_id = 94715252-461b-4836-8a57-a477870e5d99
 
 ### Auth
 
@@ -84,5 +84,23 @@ Authorization: Bearer {{token_login}}
 
 # @name deleteTask
 DELETE {{baseUrl}}api/tasks/{{first_task_id}}
+Content-Type: application/json
+Authorization: Bearer {{token_login}}
+
+###
+
+# @name createComment
+POST {{baseUrl}}api/tasks/{{first_task_id}}/comments
+Content-Type: application/json
+Authorization: Bearer {{token_login}}
+
+{
+    "comment_text":"Comentário teste"
+}
+
+###
+
+# @name getComments
+GET {{baseUrl}}api/tasks/{{first_task_id}}/comments
 Content-Type: application/json
 Authorization: Bearer {{token_login}}

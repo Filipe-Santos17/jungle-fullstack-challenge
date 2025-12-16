@@ -11,7 +11,7 @@ import {
   UpdateTaskRequest
 } from '@app/packages';
 
-import { EntityTasks, EntityComment } from "@app/packages"
+import { EntityTasks, EntityComments } from "@app/packages"
 
 @Injectable()
 export class TasksService {
@@ -19,8 +19,8 @@ export class TasksService {
     @InjectRepository(EntityTasks)
     private readonly entityTasks: Repository<EntityTasks>,
 
-    @InjectRepository(EntityComment)
-    private readonly entityComments: Repository<EntityComment>,
+    @InjectRepository(EntityComments)
+    private readonly EntityComments: Repository<EntityComments>,
   ) { }
 
   async createTask(task: CreateTaskRequest) {
@@ -96,21 +96,42 @@ export class TasksService {
   }
 
   async createOneCommentTask(commentTask: InsertInDbCommentRequest): Promise<string> {
-    this.entityComments.insert({
+    const taskId = commentTask.taskId
+
+    const task = await this.entityTasks.findOneBy({ id: taskId });
+
+    if (!task) { //Não retorna 404
+      throw new RpcException({
+        statusCode: 404,
+        message: 'Task não encontrada',
+      });
+    }
+
+    await this.EntityComments.insert({
       user_id: commentTask.userId,
       comment_text: commentTask.comment.comment_text,
-      task_id: commentTask.taskId
+      task_id: taskId
     })
 
     return "ok"
   }
 
-  async findAllCommentsByTask(params: ParamsGetCommentRequest): Promise<EntityComment[]> {
+  async findAllCommentsByTask(params: ParamsGetCommentRequest): Promise<EntityComments[]> {
     const taskId = params.taskId
+
+    const task = await this.entityTasks.findOneBy({ id: taskId });
+
+    if (!task) {
+      throw new RpcException({
+        statusCode: 404,
+        message: 'Task não encontrada',
+      });
+    }
+
     const page = params.page ?? 1;
     const size = params.size ?? 30;
 
-    const allTasks = await this.entityComments.find({
+    const allCommentsByTask = await this.EntityComments.find({
       where: {
         task_id: taskId,
 
@@ -119,6 +140,6 @@ export class TasksService {
       take: params.size
     })
 
-    return allTasks
+    return allCommentsByTask
   }
 }
