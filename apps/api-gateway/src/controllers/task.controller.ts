@@ -5,8 +5,7 @@ import { lastValueFrom } from 'rxjs';
 import { CurrentUserId } from "../decorators/CurrentUser.decorator";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 
-import { RmqService } from '@app/packages';
-import { CreateTaskRequest } from '@app/packages';
+import { RmqService, CreateTaskRequest, CreateCommentRequest } from '@app/packages';
 
 @Controller("/api/tasks")
 export class TaskController {
@@ -35,7 +34,7 @@ export class TaskController {
     @Body() task: CreateTaskRequest
   ) {
     return await lastValueFrom(
-      this.client.send("task_create", { task, userId })
+      this.client.send("task_create", { ...task, userId })
     )
   }
 
@@ -65,11 +64,34 @@ export class TaskController {
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
   async deleteOneTask(
-    @CurrentUserId() userId: string,
     @Param("id") id: string
   ) {
-    this.client.emit("task_deleteone", { id, userId })
+    return await lastValueFrom(
+      this.client.emit("task_deleteone", { id })
+    )
+  }
 
-    return id
+  @UseGuards(JwtAuthGuard)
+  @Post(":id/comments")
+  async postTaskComment(
+    @CurrentUserId() userId: string,
+    @Param("id") id: string,
+    @Body() comment: CreateCommentRequest,
+  ) {
+    return await lastValueFrom(
+      this.client.emit("task_create_comment", { taskId: id, userId, comment })
+    )
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(":id/comments")
+  async getTaskComments(
+    @Param("id") id: string,
+    @Query("page") page: number,
+    @Query("size") size: number,
+  ) {
+    return await lastValueFrom(
+      this.client.emit("task_getall_comments", { taskId: id, page, size })
+    )
   }
 }

@@ -1,7 +1,7 @@
 @baseUrl = http://localhost:3010/
 @token_login = {{login.response.body.token}}
 @user_id = {{login.response.body.user.id}}
-@first_task_id = d39aa616-aa89-4d61-bb22-93dd5c51053c
+@first_task_id = ee2f1357-be5f-47aa-bc07-a04ac06683ac
 
 ### Auth
 

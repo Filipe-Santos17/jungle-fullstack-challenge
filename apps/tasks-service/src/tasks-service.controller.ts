@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
 import { TasksService } from './tasks-service.service';
-import { CreateTaskRequest, ParamsGetTaskRequest, ParamUpdateTaskRequest, UpdateTaskRequest } from '@app/packages';
+import { CreateTaskRequest, InsertInDbCommentRequest, ParamsGetTaskRequest, ParamUpdateTaskRequest, ParamsGetCommentRequest } from '@app/packages';
 
 @Controller()
 export class TasksServiceController {
@@ -19,7 +19,7 @@ export class TasksServiceController {
   }
 
   @MessagePattern("task_getone")
-  async getOneTask(@Payload() id: string) {
+  async getOneTask(@Payload() id: { id: string }) {
     return this.tasksService.findOneTaskById(id)
   }
 
@@ -29,7 +29,17 @@ export class TasksServiceController {
   }
 
   @MessagePattern("task_deleteone")
-  async deleteOneTask(@Payload() id: string) {
+  async deleteOneTask(@Payload() id: { id: string }) {
     return this.tasksService.deleteOneTaskById(id)
+  }
+
+  @MessagePattern("task_create_comment")
+  async postTaskComment(@Payload() taskComment: InsertInDbCommentRequest) {
+    return this.tasksService.createOneCommentTask(taskComment)
+  }
+
+  @MessagePattern("task_getall_comments")
+  async getAllTaskComments(@Payload() taskComment: ParamsGetCommentRequest) {
+    return this.tasksService.findAllCommentsByTask(taskComment)
   }
 }

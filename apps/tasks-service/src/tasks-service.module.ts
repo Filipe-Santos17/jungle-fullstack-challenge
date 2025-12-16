@@ -5,26 +5,29 @@ import * as Joi from 'joi';
 
 import { TasksServiceController } from './tasks-service.controller';
 import { TasksService } from './tasks-service.service';
-import { DbModule, EntityTasks } from '@app/packages';
 
+import { DbModule, EntityComment, EntityTasks } from '@app/packages';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
+        // Database
         HOST_DB: Joi.string().required(),
         PORT_DB: Joi.number().required(),
         USERNAME_DB: Joi.string().required(),
         PASSWORD_DB: Joi.string().required(),
         DATABASE_DB: Joi.string().required(),
+
+        // Rabbit
         RABBIT_MQ_URI: Joi.string().required(),
         RABBIT_MQ_TASKS_ENV: Joi.string().required(),
       }),
       envFilePath: "./apps/tasks-service/.env"
     }),
     DbModule,
-    TypeOrmModule.forFeature([EntityTasks])
+    TypeOrmModule.forFeature([EntityTasks, EntityComment])
   ],
   controllers: [TasksServiceController],
   providers: [TasksService],

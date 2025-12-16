@@ -5,6 +5,7 @@ export * from './dtos/tasks/task.request'
 export * from './dtos/auth/login.request'
 export * from './dtos/auth/register.request'
 export * from './dtos/auth/refresh.request'
+export * from './dtos/tasks/comment.request'
 
 export * from './database/db.module'
 export * from './database/db.service'
