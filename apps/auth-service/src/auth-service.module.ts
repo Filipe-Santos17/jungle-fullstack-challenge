@@ -14,12 +14,22 @@ import { DbModule, EntityUsers, EntityRefreshToken } from '@app/packages';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
+        // JWT AUTH
         JWT_SECRET: Joi.string().required(),
         SALT_OR_ROUNDS: Joi.string().required(),
         JWT_EXPIRATION_MINUTES: Joi.string().required(),
         JWT_REFRESH_EXPIRATION_DAYS: Joi.string().required(),
+
+        // Rabbit
         RABBIT_MQ_URI: Joi.string().required(),
         RABBIT_MQ_AUTH_ENV: Joi.string().required(),
+        
+        // Database
+        PORT_DB: Joi.number().required(),
+        HOST_DB: Joi.string().required(),
+        USERNAME_DB: Joi.string().required(),
+        PASSWORD_DB: Joi.string().required(),
+        DATABASE_DB: Joi.string().required(),
       }),
       envFilePath: "./apps/auth-service/.env"
     }),

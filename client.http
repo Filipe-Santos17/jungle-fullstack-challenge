@@ -32,6 +32,7 @@ Content-Type: application/json
 POST {{baseUrl}}api/auth/refresh
 Content-Type: application/json
 Authorization: Bearer {{token_login}}
+Cookie: refresh_token=''
 
 ### Tasks
 

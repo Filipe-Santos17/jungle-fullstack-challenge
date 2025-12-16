@@ -35,7 +35,7 @@ export class TaskController {
     @Body() task: CreateTaskRequest
   ) {
     return await lastValueFrom(
-      this.client.send("task_create", task)
+      this.client.send("task_create", { task, userId })
     )
   }
 
@@ -46,7 +46,7 @@ export class TaskController {
     @Param("id") id: string
   ) {
     return await lastValueFrom(
-      this.client.send("task_getone", id)
+      this.client.send("task_getone", { id, userId })
     )
   }
 
@@ -54,11 +54,11 @@ export class TaskController {
   @Put(":id")
   async putOneTask(
     @CurrentUserId() userId: string,
-    @Param("id") id: string, 
+    @Param("id") id: string,
     @Body() task: CreateTaskRequest
   ) {
     return await lastValueFrom(
-      this.client.send("task_updateone", { id, task })
+      this.client.send("task_updateone", { id, task, userId })
     )
   }
 
@@ -68,7 +68,7 @@ export class TaskController {
     @CurrentUserId() userId: string,
     @Param("id") id: string
   ) {
-    this.client.emit("task_deleteone", id)
+    this.client.emit("task_deleteone", { id, userId })
 
     return id
   }

@@ -127,18 +127,52 @@ export class AuthServiceService {
     }
   }
 
-  refreshAuth(token: RefreshRequest) {
-    const refresh = token.refresh_token
+  async refreshAuth(token: RefreshRequest) {
+    try {
+      const refresh = token.refresh_token
 
-    if (!refresh) {
+      if (!refresh) {
+        throw new RpcException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Token invalido',
+        })
+      }
+
+      const tokenUuidRefresh = this.jwtService.verify(refresh);
+
+      const idUser = tokenUuidRefresh.sub;
+      const codeRefresh = tokenUuidRefresh.jti;
+
+      const refreshTokenExists = await this.entityRefreshToken.findOne({
+        where: {
+          jti: codeRefresh,
+          user_id: idUser,
+        }
+      })
+
+      if (!refreshTokenExists) {
+        throw new RpcException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Token invalido',
+        })
+      }
+
+      const accessPayload = {
+        sub: idUser,
+        type: 'access',
+      };
+
+      const jwtExpirationMinutes = +this.configService.getOrThrow('JWT_EXPIRATION_MINUTES')
+      const limitToken = jwtExpirationMinutes * 60
+
+      const access_token = this.jwtService.sign(accessPayload, { expiresIn: limitToken })
+
+      return { access_token }
+    } catch (e) {
       throw new RpcException({
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Token invalido',
       })
     }
-
-    refresh.replace("Bearer", "").trim()
-
-    return token
   }
 }
