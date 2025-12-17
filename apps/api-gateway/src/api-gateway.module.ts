@@ -11,7 +11,7 @@ import { GuardModule } from './guards/guards.module';
 import { StrategyModule } from './strategies/strategy.module';
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { AuthServiceService } from './api-gateway.service'
-
+import { GatewayModule } from './gateway/notifications.module';
 
 @Module({
   imports: [
@@ -28,17 +28,19 @@ import { AuthServiceService } from './api-gateway.service'
         JWT_EXPIRATION_MINUTES: Joi.number().required(),
         JWT_REFRESH_EXPIRATION_DAYS: Joi.number().required(),
 
-        NODE_ENV: Joi.string().valid("dev","prod").default("dev"),
+        // Enviroment
+        NODE_ENV: Joi.string().valid("dev", "prod").default("dev"),
       }),
       envFilePath: "./apps/api-gateway/.env"
     }),
     GuardModule,
     PassportModule,
-    StrategyModule,        
+    StrategyModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
+    GatewayModule,
   ],
   controllers: [TaskController, AuthController],
-  providers: [RmqService, StrategyModule, JwtAuthGuard, AuthServiceService],
+  providers: [RmqService, JwtAuthGuard, AuthServiceService],
   exports: [JwtAuthGuard]
 })
 export class ApiGatewayModule { }

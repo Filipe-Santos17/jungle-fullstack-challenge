@@ -1,12 +1,16 @@
 import { Controller, Get, Param, Post, Query, Body, Put, Delete, UseGuards } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
+import { ApiOperation, ApiResponse, ApiCookieAuth } from '@nestjs/swagger';
 
 import { CurrentUserId } from "../decorators/CurrentUser.decorator";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 
-import { RmqService, DataTaskRequest, CreateCommentRequest } from '@app/packages';
+import { RmqService, DataTaskRequest, CreateCommentRequest, EntityTasks, EntityComments } from '@app/packages';
 
+
+@ApiCookieAuth("access_token")
+@UseGuards(JwtAuthGuard)
 @Controller("/api/tasks")
 export class TaskController {
   private client: ClientProxy;
@@ -15,7 +19,8 @@ export class TaskController {
     this.client = this.rmqService.getClientProxy("TASKS")
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Retorna todas as tasks associadas ao usuário" })
+  @ApiResponse({ status: 200, description: "Sucesso", type: EntityTasks, isArray: true })
   @Get()
   async getTasks(
     @CurrentUserId() userId: string,
@@ -27,7 +32,8 @@ export class TaskController {
     )
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Cria uma nova task" })
+  @ApiResponse({ status: 200, description: "Sucesso", type: "string" })
   @Post()
   async postTask(
     @CurrentUserId() userId: string,
@@ -38,7 +44,8 @@ export class TaskController {
     )
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Retorna / Seleciona task por id" })
+  @ApiResponse({ status: 200, description: "Sucesso", type: EntityTasks })
   @Get(":id")
   async getOneTask(
     @CurrentUserId() userId: string,
@@ -49,7 +56,8 @@ export class TaskController {
     )
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Altera task por id" })
+  @ApiResponse({ status: 200, description: "Sucesso", type: EntityTasks })
   @Put(":id")
   async putOneTask(
     @CurrentUserId() userId: string,
@@ -61,7 +69,8 @@ export class TaskController {
     )
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Deleta task por id" })
+  @ApiResponse({ status: 200, description: "Sucesso", type: "string" })
   @Delete(":id")
   async deleteOneTask(
     @Param("id") id: string
@@ -71,7 +80,8 @@ export class TaskController {
     )
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Cria um novo comentário na task" })
+  @ApiResponse({ status: 200, description: "Sucesso", type: "string" })
   @Post(":id/comments")
   async postTaskComment(
     @CurrentUserId() userId: string,
@@ -83,7 +93,8 @@ export class TaskController {
     )
   }
 
-  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Retorna / seleciona comentários da task por id" })
+  @ApiResponse({ status: 200, description: "Sucesso", type: EntityComments, isArray: true })
   @Get(":id/comments")
   async getTaskComments(
     @Param("id") id: string,

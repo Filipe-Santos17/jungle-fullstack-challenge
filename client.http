@@ -1,7 +1,7 @@
 @baseUrl = http://localhost:3000/
 @token_login = {{login.response.body.token}}
 @user_id = {{login.response.body.user.id}}
-@first_task_id = 94715252-461b-4836-8a57-a477870e5d99
+@first_task_id = 13a1097f-7b38-41c4-aa69-f77452dc5a9d
 
 ### Auth
 
@@ -42,7 +42,6 @@ Content-Type: application/json
 Authorization: Bearer {{token_login}}
 
 {
-    "titulo": "Teste",
     "descricao": "string",
     "prazo": "2025-12-14T00:25:11.980Z",
     "prioridade": "urgent",

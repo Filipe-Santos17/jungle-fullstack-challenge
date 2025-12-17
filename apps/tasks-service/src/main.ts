@@ -10,6 +10,8 @@ async function bootstrap() {
       options: {
         urls: [process.env.RABBIT_MQ_URI!],
         queue: process.env.RABBIT_MQ_TASKS_ENV,
+        noAck: false,
+        prefetchCount: 10,
         queueOptions: {
           durable: true,
         },

@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import cookieParser from 'cookie-parser';
 
@@ -14,8 +15,20 @@ async function bootstrap() {
     origin: "http://localhost:5173",
     credentials: true,
   });
+
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new RpcToHttpExceptionFilter());
+
+  const docs = new DocumentBuilder()
+    .setTitle("Task-Api")
+    .setDescription("Jungle Gaming challenge api documentation")
+    .setVersion("1.0.0")
+    .build()
+
+  const pageDcos = SwaggerModule.createDocument(app, docs)
+
+  SwaggerModule.setup("docs", app, pageDcos)
+
   app.use(cookieParser());
 
   const configService = app.get(ConfigService);

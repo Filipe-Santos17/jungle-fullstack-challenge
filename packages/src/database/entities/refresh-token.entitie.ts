@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, ForeignKey } from "typeorm"
+import { Entity, PrimaryColumn, Column } from "typeorm"
 
 @Entity('refresh_tokens')
 export class EntityRefreshToken {
