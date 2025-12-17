@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:3010/
+@baseUrl = http://localhost:3000/
 @token_login = {{login.response.body.token}}
 @user_id = {{login.response.body.user.id}}
 @first_task_id = 94715252-461b-4836-8a57-a477870e5d99

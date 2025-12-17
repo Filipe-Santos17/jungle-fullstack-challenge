@@ -10,6 +10,7 @@ import { RpcToHttpExceptionFilter } from '@app/packages';
 async function bootstrap() {
   const app = await NestFactory.create(ApiGatewayModule);
 
+  app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new RpcToHttpExceptionFilter());
   app.use(cookieParser());
