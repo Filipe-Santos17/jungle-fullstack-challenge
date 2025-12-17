@@ -5,7 +5,7 @@ import { lastValueFrom } from 'rxjs';
 import { CurrentUserId } from "../decorators/CurrentUser.decorator";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 
-import { RmqService, CreateTaskRequest, CreateCommentRequest } from '@app/packages';
+import { RmqService, DataTaskRequest, CreateCommentRequest } from '@app/packages';
 
 @Controller("/api/tasks")
 export class TaskController {
@@ -31,10 +31,10 @@ export class TaskController {
   @Post()
   async postTask(
     @CurrentUserId() userId: string,
-    @Body() task: CreateTaskRequest
+    @Body() task: DataTaskRequest
   ) {
     return await lastValueFrom(
-      this.client.send("task_create", { ...task, userId })
+      this.client.send("task_create", { ...task, user_id: userId })
     )
   }
 
@@ -54,10 +54,10 @@ export class TaskController {
   async putOneTask(
     @CurrentUserId() userId: string,
     @Param("id") id: string,
-    @Body() task: CreateTaskRequest
+    @Body() task: DataTaskRequest
   ) {
     return await lastValueFrom(
-      this.client.send("task_updateone", { id, task, userId })
+      this.client.send("task_updateone", { id, task, user_id: userId })
     )
   }
 

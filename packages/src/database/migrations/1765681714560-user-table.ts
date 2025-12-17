@@ -13,7 +13,7 @@ export class UserTable1765681714560 implements MigrationInterface {
                 password VARCHAR(255) NOT NULL,
                 CONSTRAINT users_key_id PRIMARY KEY (id)
             );
-        `);
+        `); //TODO: Inserir indices nos bancos
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

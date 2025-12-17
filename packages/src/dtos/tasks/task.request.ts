@@ -18,7 +18,7 @@ enum taskStatus {
   DONE = "done",
 }
 
-export class CreateTaskRequest {
+export class DataTaskRequest {
   @IsString()
   @IsNotEmpty()
   titulo: string;
@@ -36,7 +36,9 @@ export class CreateTaskRequest {
 
   @IsEnum(taskStatus, { message: "O status deve ser uma das seguintes opções: todo, in_progress, review, done" })
   status: string;
+}
 
+export class CreateTaskRequest extends DataTaskRequest {
   @IsString()
   @IsNotEmpty()
   user_id: string;

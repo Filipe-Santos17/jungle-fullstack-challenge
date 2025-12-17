@@ -35,13 +35,15 @@ export class AuthController {
     }
 
     @Post("refresh")
-    async refreshTokenUser(@Req() req: Request) {
+    async refreshTokenUser(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
         const token = {
             refresh_token: req.cookies['refresh_token']
         }
 
-        return await lastValueFrom(
+        const { access_token } = await lastValueFrom(
             this.client.send("auth_refresh", token)
         )
+
+        return this.authService.sendNewAccessCookie(access_token, res)
     }
 }

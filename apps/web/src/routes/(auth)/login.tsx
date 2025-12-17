@@ -1,6 +1,6 @@
 import { useState, type Dispatch, type FormEvent, type SetStateAction } from 'react'
-import axios from "axios"
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
+import { isAxiosError } from 'axios'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -13,10 +13,10 @@ import { Input } from "@/components/ui/input"
 
 import BaseLoginTemplate from '@/components/common/auth/base-login'
 
-import env from '@/constants/envs'
+import { authApi } from '@/lib/api'
 import { showToastError, showToastSuccess } from '@/utils/toast'
-
 import type { iMsgError, iSuccessLogin } from '@/types/api'
+
 
 export const Route = createFileRoute('/(auth)/login')({
   component: AuthLogin,
@@ -37,9 +37,8 @@ export function AuthLogin() {
     e.preventDefault()
 
     try {
-      const pathBack = env.VITE_API_ROUTE
       const requestBody = { email, password }
-      const response = await axios.post(`${pathBack}/auth/login`, requestBody)
+      const response = await authApi.post('/login', requestBody)
 
       if (response.status === 201) {
         const dataLogin = response.data as iSuccessLogin
@@ -53,7 +52,7 @@ export function AuthLogin() {
         }, 5000)
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         const msgBackend = error.response?.data as iMsgError
 
         if (typeof (msgBackend?.message) === 'string') {

@@ -83,7 +83,7 @@ export class TasksService {
   async deleteOneTaskById(idTask: { id: string }): Promise<string> {
     const task = await this.entityTasks.findOneBy({ id: idTask.id });
 
-    if (!task) { //Não retorna 404
+    if (!task) {
       throw new RpcException({
         statusCode: 404,
         message: 'Task não encontrada',
