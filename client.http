@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:3000/
-@token_login = {{login.response.body.token}}
+@token_login = {{login.response.headers.Set-Cookie.access_token}}
 @user_id = {{login.response.body.user.id}}
 @first_task_id = 13a1097f-7b38-41c4-aa69-f77452dc5a9d
 
@@ -21,7 +21,7 @@ POST {{baseUrl}}api/auth/register
 Content-Type: application/json
 
 {
-    "email": "filipe@email.com",
+    "email": "filipe2@email.com",
     "username": "filipe",
     "password": "password"
 }
@@ -31,8 +31,7 @@ Content-Type: application/json
 # @name refresh
 POST {{baseUrl}}api/auth/refresh
 Content-Type: application/json
-Authorization: Bearer {{token_login}}
-Cookie: refresh_token=''
+Cookie: refresh_token={{token_login}}
 
 ### Tasks
 
@@ -42,6 +41,7 @@ Content-Type: application/json
 Authorization: Bearer {{token_login}}
 
 {
+    "titulo": "titulo da task",
     "descricao": "string",
     "prazo": "2025-12-14T00:25:11.980Z",
     "prioridade": "urgent",

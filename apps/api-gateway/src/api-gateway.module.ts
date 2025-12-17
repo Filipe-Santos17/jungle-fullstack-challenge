@@ -7,11 +7,12 @@ import { RmqService } from '@app/packages';
 
 import { TaskController } from './controllers/task.controller';
 import { AuthController } from './controllers/auth.controller';
-import { GuardModule } from './guards/guards.module';
-import { StrategyModule } from './strategies/strategy.module';
-import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { AuthServiceService } from './api-gateway.service'
+import { GuardModule } from './guards/guards.module';
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+import { StrategyModule } from './strategies/strategy.module';
 import { GatewayModule } from './gateway/notifications.module';
+import { NotificationsListener } from './listeners/notification-listener';
 
 @Module({
   imports: [
@@ -34,12 +35,11 @@ import { GatewayModule } from './gateway/notifications.module';
       envFilePath: "./apps/api-gateway/.env"
     }),
     GuardModule,
-    PassportModule,
     StrategyModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     GatewayModule,
   ],
-  controllers: [TaskController, AuthController],
+  controllers: [TaskController, AuthController, NotificationsListener],
   providers: [RmqService, JwtAuthGuard, AuthServiceService],
   exports: [JwtAuthGuard]
 })

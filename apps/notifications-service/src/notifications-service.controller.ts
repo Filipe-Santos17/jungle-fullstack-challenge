@@ -1,14 +1,15 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-
-import { NotificationsServiceService } from './notifications-service.service';
+import { EventPattern, Payload } from '@nestjs/microservices';
+import { NotificationService } from './notifications-service.service';
 
 @Controller()
-export class NotificationsServiceController {
-  constructor(private readonly notificationsServiceService: NotificationsServiceService) { }
+export class NotificationController {
+  constructor(
+    private readonly notificationService: NotificationService,
+  ) {}
 
-  @MessagePattern("")
-  getHello(@Payload() id: string): string {
-    return this.notificationsServiceService.getHello();
+  @EventPattern('notification_dispatch')
+  async handleNotification(@Payload() payload: any) {
+    return this.notificationService.dispatch(payload);
   }
 }

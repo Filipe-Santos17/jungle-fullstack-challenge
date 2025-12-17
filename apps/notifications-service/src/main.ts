@@ -9,8 +9,10 @@ async function bootstrap() {
       transport: Transport.RMQ,
       options: {
         urls: [process.env.RABBIT_MQ_URI!],
-        queue: process.env.RABBIT_MQ_NOTIFICATION_URI,
-        persistent: true,
+        queue: process.env.RABBIT_MQ_NOTIFICATION_ENV,
+        queueOptions:{
+          durable: true
+        }
       }
     }
   );
