@@ -18,8 +18,6 @@ export class NotificationService {
   }
 
   dispatch(payload: NotificationPayload): void {
-    console.log('payload', payload);
-
     this.gatewayClient.emit('ws_notification_emit', payload);
   }
 }

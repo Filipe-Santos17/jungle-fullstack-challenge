@@ -1,5 +1,6 @@
 import { Controller, Post, Body, Req, HttpCode, HttpStatus, Res } from "@nestjs/common"
 import { ClientProxy } from '@nestjs/microservices';
+import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { lastValueFrom } from 'rxjs';
 import type { Request, Response } from "express";
 
@@ -17,6 +18,8 @@ export class AuthController {
         this.client = this.rmqService.getClientProxy("AUTH")
     }
 
+    @ApiOperation({ summary: "Cria um novo usuário" })
+    @ApiResponse({ status: 200, description: "Sucesso", type: RegisterRequest })
     @Post("register")
     @HttpCode(HttpStatus.CREATED)
     async registerUser(@Body() registerUser: RegisterRequest) {
@@ -25,6 +28,8 @@ export class AuthController {
         )
     }
 
+    @ApiOperation({ summary: "Retorna dados do usuário" })
+    @ApiResponse({ status: 200, description: "Sucesso", type: LoginRequest })
     @Post("login")
     async loginUser(@Body() loginRequest: LoginRequest, @Res({ passthrough: true }) res: Response) {
         const { token, refreshToken, user } = await lastValueFrom(
@@ -34,6 +39,8 @@ export class AuthController {
         return this.authService.saveCookiesInRequest({ token, refreshToken, user }, res)
     }
 
+    @ApiOperation({ summary: "Recarrega token de acesso" })
+    @ApiResponse({ status: 200, description: "Sucesso" })
     @Post("refresh")
     async refreshTokenUser(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
         const token = {
@@ -47,6 +54,8 @@ export class AuthController {
         return this.authService.sendNewAccessCookie(access_token, res)
     }
 
+    @ApiOperation({ summary: "Encerra sessão do usuário" })
+    @ApiResponse({ status: 200, description: "Sucesso" })
     @Post("logout")
     async logoutUser(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
         const tokens = {

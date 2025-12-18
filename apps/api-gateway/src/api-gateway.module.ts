@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import * as Joi from 'joi';
+import { APP_GUARD } from '@nestjs/core';
 
 import { RmqService } from '@app/packages';
 
@@ -38,13 +40,22 @@ import { NotificationsListener } from './listeners/notification-listener';
       }),
       envFilePath: "./apps/api-gateway/.env"
     }),
+    ThrottlerModule.forRoot({
+      throttlers: [{
+        ttl: 1000, // milisegundos
+        limit: 10 // máximo de requests
+      }]
+    }),
     GuardModule,
     StrategyModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     GatewayModule,
   ],
   controllers: [TaskController, AuthController, NotificationsListener],
-  providers: [RmqService, JwtAuthGuard, AuthServiceService],
+  providers: [RmqService, JwtAuthGuard, AuthServiceService, {
+    provide: APP_GUARD,
+    useClass: ThrottlerGuard
+  }],
   exports: [JwtAuthGuard]
 })
 export class ApiGatewayModule { }

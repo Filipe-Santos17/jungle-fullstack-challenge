@@ -4,13 +4,20 @@ import { ConfigService } from '@nestjs/config';
 import { Transport } from '@nestjs/microservices'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+import { WinstonModule } from 'nest-winston';
 import cookieParser from 'cookie-parser';
 
 import { ApiGatewayModule } from './api-gateway.module';
+import { winstonLogger } from './logger/logger';
+import { HttpLoggingInterceptor } from './intercerptors/logging.interceptor';
 import { RpcToHttpExceptionFilter } from '@app/packages';
 
 async function bootstrap() {
-  const app = await NestFactory.create(ApiGatewayModule);
+  const app = await NestFactory.create(ApiGatewayModule, {
+    logger: WinstonModule.createLogger({
+      instance: winstonLogger,
+    }),
+  });
 
   app.connectMicroservice({
     transport: Transport.RMQ,
@@ -28,6 +35,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new RpcToHttpExceptionFilter());
+  app.useGlobalInterceptors(new HttpLoggingInterceptor());
 
   const docs = new DocumentBuilder()
     .setTitle("Task-Api")

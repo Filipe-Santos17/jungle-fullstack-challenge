@@ -20,7 +20,5 @@ export class NotificationsListener {
       'notification',
       payload,
     );
-
-    console.log("aquuuu", payload)
   }
 }
