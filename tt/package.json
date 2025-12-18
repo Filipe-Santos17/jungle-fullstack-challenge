@@ -1,5 +1,5 @@
 {
-  "name": "jungle-challenge",
+  "name": "tt",
   "private": true,
   "scripts": {
     "build": "turbo run build",
