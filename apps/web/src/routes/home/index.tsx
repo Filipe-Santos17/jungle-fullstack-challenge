@@ -5,11 +5,9 @@ import Header from '@/components/common/header';
 import DataTableTasks from '@/components/common/tasks/table-tasks';
 
 import { useNotifications } from '@/hooks/useNotifications';
-import { useGetTasks } from '@/hooks/query-tasks/useGetTasks';
+import useGetTasks from '@/hooks/query-tasks/useGetTasks';
 
 import { useAuthStore } from '@/stores/auth.store';
-
-import { useUpdateTask } from '@/hooks/query-tasks/useUpdateTask';
 
 export const Route = createFileRoute('/home/')({
   beforeLoad: ({ context }) => {

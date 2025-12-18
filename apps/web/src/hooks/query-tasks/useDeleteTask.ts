@@ -5,36 +5,28 @@ import { tasksApi } from '@/lib/api';
 import { showToastError } from '@/utils/toast';
 
 import type { iMsgError } from '@/types/api';
-import type { iTasksCreate } from '@/types/tasks';
 
-interface UpdateTaskVariables {
-    id: string;
-    data: iTasksCreate;
-}
-
-export default function useUpdateTask() {
+export default function useDeleteTask() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async ({ id, data }: UpdateTaskVariables) => {
+        mutationFn: async (id: string) => {
             try {
-                const response = await tasksApi.put(`/${id}`, data);
+                const response = await tasksApi.delete(`/${id}`);
 
                 return response.data;
             } catch (error) {
                 if (isAxiosError(error)) {
-                    const msgBackend = error.response?.data as iMsgError;
+                    const msgBackend = error.response?.data as iMsgError
 
-                    if (msgBackend?.statusCode === 404) return;
-
-                    if (typeof msgBackend?.message === 'string') {
-                        showToastError('Erro ao criar task!', msgBackend.message);
+                    if (typeof (msgBackend?.message) === 'string') {
+                        showToastError("Erro ao deletar tasks!", msgBackend.message)
                     }
                 }
 
                 console.error(error);
 
-                throw new Error('Falha ao criar task');
+                throw new Error('Falha ao deletar task');
             }
         },
         onSuccess: () => {

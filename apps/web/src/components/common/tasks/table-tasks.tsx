@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button"
 
 import columns from "./colums-table.js"
+import ModalShowUpTask from "./modal-show-up-one-task.js"
 
 import type { iTasks } from '@/types/tasks';
 
@@ -34,12 +35,17 @@ export default function DataTableTasks({
     totalPages
 }: iDataTableTasks) {
     const [page, setPage] = useState(1)
+    const [selectedTask, setSelectedTask] = useState<iTasks | null>(null)
 
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
     })
+
+    function handleClickRowTable(task: iTasks) {
+        setSelectedTask(task)
+    }
 
     useEffect(() => {
         async function loadDataTable() {
@@ -82,7 +88,11 @@ export default function DataTableTasks({
                             </>
                         ) : table.getRowModel().rows.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id}>
+                                <TableRow
+                                    key={row.id}
+                                    onClick={() => handleClickRowTable(row.original)}
+                                    className="cursor-pointer"
+                                >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
                                             {flexRender(
@@ -128,6 +138,10 @@ export default function DataTableTasks({
                     </Button>
                 </div>
             </div>
+            <ModalShowUpTask
+                selectedTask={selectedTask}
+                setSelectedTask={setSelectedTask}
+            />
         </div>
     )
 }

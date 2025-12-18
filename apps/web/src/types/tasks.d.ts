@@ -14,7 +14,6 @@ export enum TASK_STATUS {
     DONE = 'done'
 }
 
-// Interface correspondente
 export interface iTasksCreate {
     titulo: string;
     descricao: string;
@@ -30,15 +29,15 @@ export interface iTasks extends iTasksCreate {
     updated_at: string;
 }
 
-interface iKanbanItemProp extends iTasks {
-    name: string;
-    column: TASK_STATUS;
-    startAt: Date;
-    endAt: Date;
-    owner: string;
+export interface iCommentCreate {
+    comment_text: string;
 }
 
-export interface iFeaturesDataKanban {
-    features: iKanbanItemProp[];
-    setFeatures: (features: iKanbanItemProp[]) => Promise<void>;
+export interface iComment {
+    id: string;
+    user_id: string;
+    task_id: string;
+    comment_text: string;
+    created_at: string;
+    updated_at: string;
 }
