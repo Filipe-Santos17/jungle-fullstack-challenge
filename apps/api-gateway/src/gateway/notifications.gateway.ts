@@ -25,6 +25,7 @@ export class NotificationsGateway
 
   handleConnection(client: Socket) {
     const userId = client.handshake.auth?.userId;
+    console.log("useri", userId)
     if (userId) {
       client.join(userId);
     }

@@ -1,5 +1,3 @@
-import { faker } from '@faker-js/faker';
-
 import {
     KanbanBoard,
     KanbanCard,
@@ -9,25 +7,19 @@ import {
 } from '@/components/ui/shadcn-io/kanban';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-import capitalize from "@/utils/capitalize-text"
 import { dateFormatter, shortDateFormatter } from "@/utils/date-formatters"
 
-interface iFeaturesDataKanban {
-    features: KanbanItemProps[]
-    setFeatures: []
-}
-
 const columns = [
-    { id: faker.string.uuid(), name: 'TODO', color: '#6B7280' },
-    { id: faker.string.uuid(), name: 'IN_PROGRESS', color: '#F59E0B' },
-    { id: faker.string.uuid(), name: 'REVIEW', color: '#10B981' },
-    { id: faker.string.uuid(), name: 'DONE', color: '#10B981' },
+    { id: 'todo', name: 'TODO', color: '#6B7280' },
+    { id: 'in_progress', name: 'IN_PROGRESS', color: '#F59E0B' },
+    { id: 'review', name: 'REVIEW', color: '#10B981' },
+    { id: 'done', name: 'DONE', color: '#10B981' },
 ];
 
 export default function KanbanTasks({
     features,
     setFeatures,
-}: iFeaturesDataKanban) {
+}) {
     return (
         <KanbanProvider
             columns={columns}
@@ -46,7 +38,7 @@ export default function KanbanTasks({
                             <span>{column.name}</span>
                         </div>
                     </KanbanHeader>
-                    <KanbanCards id={column.id} className='max-h-[80vh] pb-19 overflow-auto'>
+                    <KanbanCards id={column.id} className='max-h-[80vh] overflow-auto'>
                         {(feature: (typeof features)[number]) => (
                             <KanbanCard
                                 column={column.id}

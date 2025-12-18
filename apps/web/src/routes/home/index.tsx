@@ -1,52 +1,57 @@
-import { useState, use } from 'react';
-import { createFileRoute } from '@tanstack/react-router'
-import { isAxiosError } from 'axios';
+import { useState, useEffect } from 'react';
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 import Header from '@/components/common/header';
 import KanbanTasks from '@/components/common/tasks/kanban-tasks';
 
-import { tasksApi } from '@/lib/api'
+import { useNotifications } from '@/hooks/useNotifications';
+import { useTasks } from '@/hooks/useTasks';
 
-import { showToastError } from '@/utils/toast';
+import { useAuthStore } from '@/stores/auth.store';
 
-import type { iMsgError } from '@/types/api';
+import mapTasksToKanbanItems from '@/utils/convert-task-kanban-item'
+
+import type { iKanbanItemProp } from '@/types/tasks';
 
 export const Route = createFileRoute('/home/')({
-    component: RouteComponent,
+  beforeLoad: ({ context }) => {
+    //@ts-ignore
+    if (!context?.auth.isAuthenticated) {
+      throw redirect({
+        to: '/login',
+      })
+    }
+  },
+  component: RouteComponent,
 })
 
-const fetchDataTasks = async () => {
-    try {
-        const response = await tasksApi.get('')
-
-        return response.data;
-    } catch (error) {
-        if (isAxiosError(error)) {
-            const msgBackend = error.response?.data as iMsgError
-
-            if (typeof (msgBackend?.message) === 'string') {
-                showToastError("Erro ao carregar tasks!", msgBackend.message)
-            }
-        }
-
-        console.error(error)
-    }
-};
-
-const dataPromise = fetchDataTasks();
 
 function RouteComponent() {
-    const allTasks = use(dataPromise);
+  const { user } = useAuthStore();
+  const { data: tasks, isLoading, isError } = useTasks();
 
-    const [features, setFeatures] = useState(allTasks);
+  useNotifications(user?.id ?? null);
 
-    return (
-        <>
-            <Header />
-            <KanbanTasks
-                features={[]}
-                setFeatures={setFeatures}
-            />
-        </>
-    );
-};
+  const [allTasks, setAllTasks] = useState<iKanbanItemProp[]>(() =>
+    mapTasksToKanbanItems(tasks ?? [])
+  );
+
+  useEffect(() => {
+    if (tasks) {
+      setAllTasks(mapTasksToKanbanItems(tasks));
+    }
+  }, [tasks]);
+  
+  if (isLoading) return <p>Carregando...</p>;
+  if (isError) return <p>Erro ao carregar tasks.</p>;
+  
+  return (
+    <>
+      <Header />
+      <KanbanTasks
+        features={allTasks}
+        setFeatures={setAllTasks}
+      />
+    </>
+  );
+}

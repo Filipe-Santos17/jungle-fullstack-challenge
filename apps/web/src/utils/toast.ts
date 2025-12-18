@@ -17,3 +17,12 @@ export function showToastSuccess(title: string, msg: string) {
         },
     })
 }
+
+export function showToastAlert(title: string, msg: string) {
+    toast.warning(title, {
+        description: msg,
+        classNames: {
+            description: "!text-black",
+        },
+    })
+}

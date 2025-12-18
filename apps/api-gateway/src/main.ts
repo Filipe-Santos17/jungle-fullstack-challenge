@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Transport } from '@nestjs/microservices'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import cookieParser from 'cookie-parser';
@@ -10,6 +11,15 @@ import { RpcToHttpExceptionFilter } from '@app/packages';
 
 async function bootstrap() {
   const app = await NestFactory.create(ApiGatewayModule);
+
+  app.connectMicroservice({
+    transport: Transport.RMQ,
+    options: {
+      urls: [process.env.RABBIT_MQ_URI],
+      queue: process.env.RABBIT_MQ_API_GATEWAY_ENV, // ou API_GATEWAY_ENV
+      queueOptions: { durable: true },
+    },
+  });
 
   app.enableCors({
     origin: "http://localhost:5173",
@@ -32,6 +42,8 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const configService = app.get(ConfigService);
+
+  await app.startAllMicroservices();
 
   await app.listen(configService.get('PORT')!);
 }

@@ -5,11 +5,14 @@ import * as Joi from 'joi';
 
 import { RmqService } from '@app/packages';
 
+import { AuthServiceService } from './api-gateway.service'
+
 import { TaskController } from './controllers/task.controller';
 import { AuthController } from './controllers/auth.controller';
-import { AuthServiceService } from './api-gateway.service'
+
 import { GuardModule } from './guards/guards.module';
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+
 import { StrategyModule } from './strategies/strategy.module';
 import { GatewayModule } from './gateway/notifications.module';
 import { NotificationsListener } from './listeners/notification-listener';
@@ -23,6 +26,7 @@ import { NotificationsListener } from './listeners/notification-listener';
         RABBIT_MQ_URI: Joi.string().required(),
         RABBIT_MQ_AUTH_ENV: Joi.string().required(),
         RABBIT_MQ_TASKS_ENV: Joi.string().required(),
+        RABBIT_MQ_API_GATEWAY_ENV: Joi.string().required(),
 
         //Jwt Security
         JWT_SECRET: Joi.string().required(),

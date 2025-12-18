@@ -14,17 +14,17 @@ import { Input } from "@/components/ui/input"
 import BaseLoginTemplate from '@/components/common/auth/base-login'
 
 import { authApi } from '@/lib/api'
-import { showToastError, showToastSuccess } from '@/utils/toast'
+import { useAuthStore } from '@/stores/auth.store'
 import type { iMsgError, iSuccessLogin } from '@/types/api'
-
+import { showToastError, showToastSuccess } from '@/utils/toast'
 
 export const Route = createFileRoute('/(auth)/login')({
   component: AuthLogin,
 })
 
 export function AuthLogin() {
-
   const navigate = useNavigate()
+  const { setUser } = useAuthStore()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -43,13 +43,16 @@ export function AuthLogin() {
       if (response.status === 201) {
         const dataLogin = response.data as iSuccessLogin
 
-        localStorage.setItem('user_data', JSON.stringify(dataLogin.user))
+        setUser(dataLogin.user)
 
-        showToastSuccess("Login feito com sucesso!", `Seja bem vindo de volta ${dataLogin.user.username}`)
+        showToastSuccess(
+          "Login feito com sucesso!",
+          `Seja bem vindo de volta ${dataLogin.user.username}`
+        )
 
         setTimeout(() => {
           navigate({ to: "/home", replace: true })
-        }, 5000)
+        }, 3000)
       }
     } catch (error) {
       if (isAxiosError(error)) {

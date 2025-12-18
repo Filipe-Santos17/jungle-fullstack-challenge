@@ -1,4 +1,4 @@
-import { useState, type FormEvent, useRef } from "react"
+import { useState, type FormEvent } from "react"
 import { isAxiosError } from "axios"
 
 import { Button } from "@/components/ui/button"
@@ -104,7 +104,7 @@ export default function ModalAddTask() {
                     Criar nova task
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="">
                 <form onSubmit={handleSubmitFormNewTask}>
                     <DialogHeader>
                         <DialogTitle>Criar / Editar Task</DialogTitle>

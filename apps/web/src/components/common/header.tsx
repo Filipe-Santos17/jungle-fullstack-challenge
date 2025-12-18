@@ -1,18 +1,10 @@
-import type { MouseEvent } from "react"
 import { Button } from "../ui/button"
 import { ListFilter, LogOut } from "lucide-react"
 
 import ModalAddTask from "./tasks/modal-add-task"
 
-interface iHeaderActions {
-  handleClickFilterTasks: (e: MouseEvent<HTMLButtonElement>) => Promise<void>
-  handleClickBtnLogout: (e: MouseEvent<HTMLButtonElement>) => Promise<void>
-}
-
-export default function Header({
-  handleClickFilterTasks,
-  handleClickBtnLogout,
-}: iHeaderActions) {
+//onClick={handleClickBtnLogout}
+export default function Header() {
   return (
     <div className="flex relative grow items-center justify-between w-[calc(100%-23px)] h-auto py-3 gap-1 px-4 mb-3">
       <div className="w-12 h-12">
@@ -22,12 +14,12 @@ export default function Header({
       <div className="flex gap-2 items-center justify-center">
         <ModalAddTask/>
 
-        <Button className="cursor-pointer hover:opacity-75" onClick={handleClickFilterTasks}>
+        <Button className="cursor-pointer hover:opacity-75">
           <ListFilter />
           Aplicar filtros
         </Button>
 
-        <Button className="cursor-pointer hover:opacity-75" onClick={handleClickBtnLogout}>
+        <Button className="cursor-pointer hover:opacity-75">
           <LogOut />
           Logout
         </Button>

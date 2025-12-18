@@ -4,6 +4,7 @@ const zodSchema = z.object({
   VITE_ENVIROMENT: z.enum(["development", "production", "test"]).default("development"),
   VITE_API_ROUTE: z.string(),
   VITE_PORT: z.coerce.number().default(5173),
+  VITE_API_WS_ROUTE: z.string(),
 })
 
 const _env = zodSchema.safeParse(import.meta.env)
