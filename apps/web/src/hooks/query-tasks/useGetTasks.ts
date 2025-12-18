@@ -5,12 +5,28 @@ import { showToastError } from '@/utils/toast';
 import type { iMsgError } from '@/types/api';
 import type { iTasks } from '@/types/tasks';
 
-export function useGetTasks() {
+interface iParamsGetRequest {
+    page?: number;
+    size?: number;
+}
+
+export function useGetTasks(params: iParamsGetRequest = {}) {
     return useQuery<iTasks[], Error>({
-        queryKey: ['tasks'],
-        queryFn: async () => {
+        queryKey: ['tasks', params],
+        //@ts-ignore
+        queryFn: async ({ queryKey }) => {
+            const [, { page, size }] = queryKey as [
+                string,
+                iParamsGetRequest
+            ];
+
             try {
-                const response = await tasksApi.get('');
+                const response = await tasksApi.get<iTasks[]>('', {
+                    params: {
+                        page,
+                        size,
+                    },
+                });
 
                 return response.data;
             } catch (error) {
@@ -30,6 +46,7 @@ export function useGetTasks() {
             }
         },
         staleTime: 1000 * 60,
+        keepPreviousData: true,
         retry: 1,
     });
 }

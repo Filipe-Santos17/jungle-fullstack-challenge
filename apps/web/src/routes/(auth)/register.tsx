@@ -1,7 +1,6 @@
-import { useState, type Dispatch, type FormEvent, type SetStateAction } from 'react'
-import axios from "axios"
-
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -11,61 +10,47 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-
+import { Spinner } from '@/components/ui/spinner'
 import BaseLoginTemplate from '@/components/common/auth/base-login'
 
-import env from '@/constants/envs'
-import { showToastError, showToastSuccess } from '@/utils/toast'
+import usePostAuthRegister from '@/hooks/query-auth/useRegister'
 
-import type { iMsgError } from '@/types/api'
+import { showToastSuccess } from '@/utils/toast'
+
+import { registerSchema } from "@/validators/auth.validators"
+import type { tRegisterFormData } from '@/validators/auth.validators'
 
 export const Route = createFileRoute('/(auth)/register')({
   component: AuthRegister,
 })
 
 export function AuthRegister() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<tRegisterFormData>({
+    resolver: zodResolver(registerSchema),
+  })
+
+  const { mutateAsync: registerUser, isPending } = usePostAuthRegister()
 
   const navigate = useNavigate()
 
-  const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  async function handleSubmitRegister(data: tRegisterFormData) {
+    const userData = await registerUser(data)
+    
+    if (typeof userData.message === 'string') {//userData
+      showToastSuccess("Conta criada com sucesso", userData.message)
 
-  function handleChangeInput(setData: Dispatch<SetStateAction<string>>, text: string) {
-    setData(text)
-  }
-
-  async function handleLogin(e: FormEvent) {
-    e.preventDefault()
-
-    try {
-      const pathBack = env.VITE_API_ROUTE
-      const requestBody = { email, password, username }
-      const response = await axios.post(`${pathBack}/auth/register`, requestBody)
-
-      if (response.status === 201) {
-        showToastSuccess("Conta criada com sucesso", "Por favor faça login agora!")
-
-        setTimeout(() => {
-          navigate({ to: "/login", replace: true })
-        }, 5000)
-      }
-
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const msgBackend = error.response?.data as iMsgError
-
-        if (typeof (msgBackend?.message) === 'string') {
-          showToastError("Falha ao criar conta", msgBackend.message)
-        }
-      }
-      
-      console.error(error);
+      setTimeout(() => {
+        navigate({ to: "/login", replace: true })
+      }, 3000)
     }
   }
 
   return (
-    <BaseLoginTemplate handleSubmitForm={handleLogin}>
+    <BaseLoginTemplate handleSubmitForm={handleSubmit(handleSubmitRegister)}>
       <FieldGroup>
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold">Bem vindo</h1>
@@ -79,10 +64,14 @@ export function AuthRegister() {
             id="username"
             type="text"
             placeholder="Nome"
-            required
-            value={username}
-            onChange={e => handleChangeInput(setUsername, e.currentTarget.value)}
+            autoComplete='username'
+            {...register('username')}
           />
+          {errors.username && (
+            <p className="text-sm text-destructive">
+              {errors.username.message}
+            </p>
+          )}
         </Field>
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -90,10 +79,14 @@ export function AuthRegister() {
             id="email"
             type="email"
             placeholder="m@example.com"
-            required
-            value={email}
-            onChange={e => handleChangeInput(setEmail, e.currentTarget.value)}
+            autoComplete='email'
+            {...register('email')}
           />
+          {errors.email && (
+            <p className="text-sm text-destructive">
+              {errors.email.message}
+            </p>
+          )}
         </Field>
         <Field>
           <div className="flex items-center">
@@ -108,13 +101,19 @@ export function AuthRegister() {
           <Input
             id="password"
             type="password"
-            required
-            value={password}
-            onChange={e => handleChangeInput(setPassword, e.currentTarget.value)}
+            autoComplete='current-password'
+            {...register('password')}
           />
+          {errors.password && (
+            <p className="text-sm text-destructive">
+              {errors.password.message}
+            </p>
+          )}
         </Field>
         <Field>
-          <Button type="submit">Criar conta</Button>
+          <Button type="submit" className="cursor-pointer hover:opacity-75" disabled={isPending}>
+            {isPending ? <Spinner /> : "Criar conta"}
+          </Button>
         </Field>
         <FieldDescription className="text-center">
           Já possui uma conta? <Link to="/login">Faça Login</Link>

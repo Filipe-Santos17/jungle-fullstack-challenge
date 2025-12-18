@@ -1,6 +1,7 @@
-import { useState, type Dispatch, type FormEvent, type SetStateAction } from 'react'
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
-import { isAxiosError } from 'axios'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import usePostAuthLogin from '@/hooks/query-auth/useLogin'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -10,65 +11,51 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-
 import BaseLoginTemplate from '@/components/common/auth/base-login'
+import { Spinner } from '@/components/ui/spinner'
 
-import { authApi } from '@/lib/api'
 import { useAuthStore } from '@/stores/auth.store'
-import type { iMsgError, iSuccessLogin } from '@/types/api'
-import { showToastError, showToastSuccess } from '@/utils/toast'
+import { showToastSuccess } from '@/utils/toast'
+import { userSchema, loginSchema } from "@/validators/auth.validators"
+import type { tLoginFormData } from '@/validators/auth.validators'
 
 export const Route = createFileRoute('/(auth)/login')({
   component: AuthLogin,
 })
 
 export function AuthLogin() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<tLoginFormData>({
+    resolver: zodResolver(loginSchema),
+  })
+
+  const { mutateAsync: loginUser, isPending } = usePostAuthLogin()
+
   const navigate = useNavigate()
   const { setUser } = useAuthStore()
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  async function handleSubmitLogin(data: tLoginFormData) {
+    const userData = await loginUser(data)
 
-  function handleChangeInput(setData: Dispatch<SetStateAction<string>>, text: string) {
-    setData(text)
-  }
+    if (userSchema.safeParse(userData.user)) {
+      setUser(userData.user)
 
-  async function handleLogin(e: FormEvent) {
-    e.preventDefault()
+      showToastSuccess(
+        "Login feito com sucesso!",
+        `Seja bem vindo de volta ${userData.user.username}`
+      )
 
-    try {
-      const requestBody = { email, password }
-      const response = await authApi.post('/login', requestBody)
-
-      if (response.status === 201) {
-        const dataLogin = response.data as iSuccessLogin
-
-        setUser(dataLogin.user)
-
-        showToastSuccess(
-          "Login feito com sucesso!",
-          `Seja bem vindo de volta ${dataLogin.user.username}`
-        )
-
-        setTimeout(() => {
-          navigate({ to: "/home", replace: true })
-        }, 3000)
-      }
-    } catch (error) {
-      if (isAxiosError(error)) {
-        const msgBackend = error.response?.data as iMsgError
-
-        if (typeof (msgBackend?.message) === 'string') {
-          showToastError("Login invalido", msgBackend.message)
-        }
-      }
-
-      console.error(error);
+      setTimeout(() => {
+        navigate({ to: "/home", replace: true })
+      }, 3000)
     }
   }
 
   return (
-    <BaseLoginTemplate handleSubmitForm={handleLogin}>
+    <BaseLoginTemplate handleSubmitForm={handleSubmit(handleSubmitLogin)}>
       <FieldGroup>
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-2xl font-bold">Bem vindo de volta</h1>
@@ -76,18 +63,23 @@ export function AuthLogin() {
             Prencha seu email e senha para entrar na sua conta
           </p>
         </div>
+
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <Input
             id="email"
             type="email"
             placeholder="m@example.com"
-            required
             autoComplete='email'
-            value={email}
-            onChange={e => handleChangeInput(setEmail, e.currentTarget.value)}
+            {...register('email')}
           />
+          {errors.email && (
+            <p className="text-sm text-destructive">
+              {errors.email.message}
+            </p>
+          )}
         </Field>
+
         <Field>
           <div className="flex items-center">
             <FieldLabel htmlFor="password">Senha</FieldLabel>
@@ -101,14 +93,20 @@ export function AuthLogin() {
           <Input
             id="password"
             type="password"
-            required
             autoComplete='current-password'
-            value={password}
-            onChange={e => handleChangeInput(setPassword, e.currentTarget.value)}
+            {...register('password')}
           />
+          {errors.password && (
+            <p className="text-sm text-destructive">
+              {errors.password.message}
+            </p>
+          )}
         </Field>
+
         <Field>
-          <Button type="submit" className='cursor-pointer hover:opacity-75'>Entrar</Button>
+          <Button type="submit" className='cursor-pointer hover:opacity-75' disabled={isPending}>
+            {isPending ? <Spinner /> : "Entrar"}
+          </Button>
         </Field>
         <FieldDescription className="text-center">
           Não tem conta? <Link to="/register">Criar</Link>

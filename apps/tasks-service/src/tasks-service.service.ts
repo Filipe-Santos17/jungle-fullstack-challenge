@@ -74,14 +74,14 @@ export class TasksService {
   async findAllTaskByUser(params: ParamsGetTaskRequest): Promise<EntityTasks[]> {
     const userId = params.userId
     const page = params.page ?? 1;
-    const size = params.size ?? 30;
+    const size = params.size ?? 10;
 
     const allTasks = await this.entityTasks.find({
       where: {
         user_id: userId
       },
       skip: (page - 1) * size,
-      take: params.size
+      take: size
     })
 
     return allTasks
