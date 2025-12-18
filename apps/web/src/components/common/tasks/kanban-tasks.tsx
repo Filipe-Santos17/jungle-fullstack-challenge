@@ -9,17 +9,19 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 import { dateFormatter, shortDateFormatter } from "@/utils/date-formatters"
 
+import type { iFeaturesDataKanban } from '@/types/tasks';
+
 const columns = [
     { id: 'todo', name: 'TODO', color: '#6B7280' },
     { id: 'in_progress', name: 'IN_PROGRESS', color: '#F59E0B' },
-    { id: 'review', name: 'REVIEW', color: '#10B981' },
+    { id: 'review', name: 'REVIEW', color: '#008ECC' },
     { id: 'done', name: 'DONE', color: '#10B981' },
 ];
 
 export default function KanbanTasks({
     features,
     setFeatures,
-}) {
+}: iFeaturesDataKanban) {
     return (
         <KanbanProvider
             columns={columns}

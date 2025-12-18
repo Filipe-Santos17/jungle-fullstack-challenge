@@ -22,15 +22,19 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Spinner } from "@/components/ui/spinner"
 import { CirclePlus } from "lucide-react"
 
-import { tasksApi } from "@/lib/api"
+import { usePostTask } from "@/hooks/query-tasks/usePostTask"
 import { showToastError, showToastSuccess } from '@/utils/toast';
 
 import type { iMsgError } from "@/types/api"
+import type { TASK_PRIORITY, TASK_STATUS } from "@/types/tasks"
 
 
 export default function ModalAddTask() {
+    const { mutateAsync: postTask, isPending } = usePostTask();
+
     const [formNewTask, setFormNewTask] = useState({
         title: '',
         description: '',
@@ -62,11 +66,11 @@ export default function ModalAddTask() {
                 titulo: formNewTask.title,
                 descricao: formNewTask.description,
                 prazo: formNewTask.deadline,
-                prioridade: formNewTask.priority.toLocaleLowerCase(),
-                status: formNewTask.status.toLocaleLowerCase(),
+                prioridade: formNewTask.priority.toLocaleLowerCase() as TASK_PRIORITY,
+                status: formNewTask.status.toLocaleLowerCase() as TASK_STATUS,
             }
 
-            const resp = await tasksApi.post("", dataNewTask)
+            const resp = await postTask(dataNewTask);
 
             if (resp.status === 201) {
                 showToastSuccess("Task criada com sucesso!", "")
@@ -196,7 +200,9 @@ export default function ModalAddTask() {
                         <DialogClose asChild>
                             <Button variant="outline" className="cursor-pointer">Cancelar</Button>
                         </DialogClose>
-                        <Button type="submit" className="cursor-pointer">Salvar</Button>
+                        <Button type="submit" className="cursor-pointer" disabled={isPending}>
+                            {isPending ? <Spinner /> : "Salvar"}
+                        </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

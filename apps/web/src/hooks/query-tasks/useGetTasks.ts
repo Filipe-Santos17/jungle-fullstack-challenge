@@ -5,7 +5,7 @@ import { showToastError } from '@/utils/toast';
 import type { iMsgError } from '@/types/api';
 import type { iTasks } from '@/types/tasks';
 
-export function useTasks() {
+export function useGetTasks() {
     return useQuery<iTasks[], Error>({
         queryKey: ['tasks'],
         queryFn: async () => {
