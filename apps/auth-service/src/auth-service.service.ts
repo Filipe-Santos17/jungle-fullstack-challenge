@@ -7,7 +7,7 @@ import { Repository, DataSource } from 'typeorm';
 import bcrypt from "bcrypt"
 import { randomUUID } from 'node:crypto';
 
-import { EntityUsers, EntityRefreshToken, LoginRequest, RegisterRequest, RefreshRequest } from '@app/packages';
+import { EntityUsers, EntityRefreshToken, LoginRequest, RegisterRequest, RefreshRequest, AllTokensRequest } from '@app/packages';
 
 @Injectable()
 export class AuthServiceService {
@@ -168,6 +168,44 @@ export class AuthServiceService {
       const access_token = this.jwtService.sign(accessPayload, { expiresIn: limitToken })
 
       return { access_token }
+    } catch (e) {
+      throw new RpcException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Token invalido',
+      })
+    }
+  }
+
+  async deleteAuth(token: AllTokensRequest) {
+    try {
+      const access = token.access_token
+      const refresh = token.refresh_token
+
+      if (!refresh && !access) {
+        throw new RpcException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Tokens invalidos',
+        })
+      }
+
+      const tokenUuidRefresh = this.jwtService.verify(refresh);
+
+      const idUser = tokenUuidRefresh.sub;
+      const codeRefresh = tokenUuidRefresh.jti;
+
+      const refreshTokenDelete = await this.entityRefreshToken.delete({
+        jti: codeRefresh,
+        user_id: idUser,
+      })
+
+      if (!refreshTokenDelete) {
+        throw new RpcException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Token invalido',
+        })
+      }
+
+      return "ok"
     } catch (e) {
       throw new RpcException({
         statusCode: HttpStatus.UNAUTHORIZED,

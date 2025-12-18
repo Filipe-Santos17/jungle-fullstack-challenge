@@ -1,5 +1,7 @@
-import { useState, type FormEvent } from "react"
-import { isAxiosError } from "axios"
+import { useState } from "react"
+import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import usePostTask from "@/hooks/query-tasks/usePostTask"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -25,23 +27,31 @@ import { Label } from "@/components/ui/label"
 import { Spinner } from "@/components/ui/spinner"
 import { CirclePlus } from "lucide-react"
 
-import { usePostTask } from "@/hooks/query-tasks/usePostTask"
-import { showToastError, showToastSuccess } from '@/utils/toast';
-
-import type { iMsgError } from "@/types/api"
 import type { TASK_PRIORITY, TASK_STATUS } from "@/types/tasks"
+
+import { taskCreateSchema } from "@/validators/task.validator"
+import type { tTaskCreateSchema } from "@/validators/task.validator"
 
 
 export default function ModalAddTask() {
-    const { mutateAsync: postTask, isPending } = usePostTask();
-
-    const [formNewTask, setFormNewTask] = useState({
-        title: '',
-        description: '',
-        deadline: '',
-        priority: '',
-        status: '',
+    const {
+        register,
+        handleSubmit,
+        control,
+        reset,
+        formState: { errors },
+    } = useForm<tTaskCreateSchema>({
+        resolver: zodResolver(taskCreateSchema),
+        defaultValues: {
+            titulo: '',
+            descricao: '',
+            prazo: '',
+            prioridade: undefined,
+            status: undefined,
+        },
     })
+
+    const { mutateAsync: postTask, isPending } = usePostTask();
 
     const [showDialog, setShowDialog] = useState(false)
 
@@ -49,54 +59,18 @@ export default function ModalAddTask() {
         setShowDialog(true)
     }
 
-    function handleChangeValue(key: keyof typeof formNewTask, newValue: string) {
-        setFormNewTask(oldTask => {
-            return {
-                ...oldTask,
-                [key]: newValue
-            }
-        })
-    }
+    async function handleSubmitFormNewTask(data: tTaskCreateSchema) {
+        const dataNewTask = {
+            ...data,
+            prioridade: data.prioridade.toLocaleLowerCase() as TASK_PRIORITY,
+            status: data.status.toLocaleLowerCase() as TASK_STATUS,
+        }
 
-    async function handleSubmitFormNewTask(e: FormEvent) {
-        try {
-            e.preventDefault()
+        const resp = await postTask(dataNewTask);
 
-            const dataNewTask = {
-                titulo: formNewTask.title,
-                descricao: formNewTask.description,
-                prazo: formNewTask.deadline,
-                prioridade: formNewTask.priority.toLocaleLowerCase() as TASK_PRIORITY,
-                status: formNewTask.status.toLocaleLowerCase() as TASK_STATUS,
-            }
-
-            const resp = await postTask(dataNewTask);
-
-            if (resp.status === 201) {
-                showToastSuccess("Task criada com sucesso!", "")
-
-                setShowDialog(false)
-
-                setFormNewTask({
-                    title: '',
-                    description: '',
-                    deadline: '',
-                    priority: '',
-                    status: '',
-                })
-            }
-        } catch (error) {
-            if (isAxiosError(error)) {
-                const msgBackend = error.response?.data as iMsgError
-
-                if (typeof (msgBackend?.message) === 'string') {
-                    showToastError("Erro ao criar tasks!", msgBackend.message)
-                }
-
-                if (Array.isArray(msgBackend?.message)) {
-                    showToastError("Erro ao criar tasks!", msgBackend.message[0])
-                }
-            }
+        if (resp === "ok") {
+            setShowDialog(false)
+            reset()
         }
     }
 
@@ -109,7 +83,7 @@ export default function ModalAddTask() {
                 </Button>
             </DialogTrigger>
             <DialogContent className="">
-                <form onSubmit={handleSubmitFormNewTask}>
+                <form onSubmit={handleSubmit(handleSubmitFormNewTask)}>
                     <DialogHeader>
                         <DialogTitle>Criar / Editar Task</DialogTitle>
                         <DialogDescription className="mb-4">
@@ -122,77 +96,101 @@ export default function ModalAddTask() {
                             <Label htmlFor="title">Título</Label>
                             <Input
                                 id="title"
-                                name="title"
-                                required
                                 placeholder="Ex: Ajustar layout do dashboard"
-                                value={formNewTask.title}
-                                onChange={(e) => handleChangeValue('title', e.currentTarget.value)}
+                                {...register('titulo')}
                             />
+                            {errors.titulo && (
+                                <p className="text-sm text-destructive">
+                                    {errors.titulo.message}
+                                </p>
+                            )}
                         </div>
 
                         <div className="grid gap-2">
                             <Label htmlFor="description">Descrição</Label>
                             <Textarea
                                 id="description"
-                                name="description"
-                                required
                                 placeholder="Descreva os detalhes da task"
                                 className="resize-none"
-                                value={formNewTask.description}
-                                onChange={(e) => handleChangeValue('description', e.currentTarget.value)}
+                                {...register('descricao')}
                             />
+                            {errors.descricao && (
+                                <p className="text-sm text-destructive">
+                                    {errors.descricao.message}
+                                </p>
+                            )}
                         </div>
 
                         <div className="grid gap-2">
                             <Label htmlFor="deadline">Prazo</Label>
                             <Input
                                 id="deadline"
-                                name="deadline"
-                                required
                                 type="date"
-                                value={formNewTask.deadline}
-                                onChange={(e) => handleChangeValue('deadline', e.currentTarget.value)}
+                                {...register('prazo')}
                             />
+                            {errors.prazo && (
+                                <p className="text-sm text-destructive">
+                                    {errors.prazo.message}
+                                </p>
+                            )}
                         </div>
 
                         <div className="grid gap-2 w-full">
                             <Label htmlFor="priority">Prioridade</Label>
-                            <Select
-                                name="priority"
-                                value={formNewTask.priority}
-                                onValueChange={(newValue) => handleChangeValue('priority', newValue)}
-                                required
-                            >
-                                <SelectTrigger id="priority" className="w-full">
-                                    <SelectValue placeholder="Selecione a prioridade" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="LOW">LOW</SelectItem>
-                                    <SelectItem value="MEDIUM">MEDIUM</SelectItem>
-                                    <SelectItem value="HIGH">HIGH</SelectItem>
-                                    <SelectItem value="URGENT">URGENT</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <Controller
+                                control={control}
+                                name="prioridade"
+                                render={({ field }) => (
+                                    <Select
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger id="priority" className="w-full">
+                                            <SelectValue placeholder="Selecione a prioridade" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="LOW">LOW</SelectItem>
+                                            <SelectItem value="MEDIUM">MEDIUM</SelectItem>
+                                            <SelectItem value="HIGH">HIGH</SelectItem>
+                                            <SelectItem value="URGENT">URGENT</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                            {errors.prioridade && (
+                                <p className="text-sm text-destructive">
+                                    {errors.prioridade.message}
+                                </p>
+                            )}
                         </div>
 
                         <div className="grid gap-2 w-full">
                             <Label htmlFor="status">Status</Label>
-                            <Select
+                            <Controller
+                                control={control}
                                 name="status"
-                                value={formNewTask.status}
-                                onValueChange={(newValue) => handleChangeValue('status', newValue)}
-                                required
-                            >
-                                <SelectTrigger id="status" className="w-full">
-                                    <SelectValue placeholder="Selecione o status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="TODO">TODO</SelectItem>
-                                    <SelectItem value="IN_PROGRESS">IN_PROGRESS</SelectItem>
-                                    <SelectItem value="REVIEW">REVIEW</SelectItem>
-                                    <SelectItem value="DONE">DONE</SelectItem>
-                                </SelectContent>
-                            </Select>
+                                render={({ field }) => (
+                                    <Select
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                    >
+                                        <SelectTrigger id="status" className="w-full">
+                                            <SelectValue placeholder="Selecione o status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="TODO">TODO</SelectItem>
+                                            <SelectItem value="IN_PROGRESS">IN_PROGRESS</SelectItem>
+                                            <SelectItem value="REVIEW">REVIEW</SelectItem>
+                                            <SelectItem value="DONE">DONE</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
+                            {errors.status && (
+                                <p className="text-sm text-destructive">
+                                    {errors.status.message}
+                                </p>
+                            )}
                         </div>
                     </div>
 

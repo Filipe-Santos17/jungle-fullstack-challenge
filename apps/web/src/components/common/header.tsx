@@ -2,6 +2,7 @@ import { Button } from "../ui/button"
 import { ListFilter, LogOut } from "lucide-react"
 
 import ModalAddTask from "./tasks/modal-add-task"
+import ModalLogout from "./auth/modal-logout"
 
 //onClick={handleClickBtnLogout}
 export default function Header() {
@@ -19,10 +20,7 @@ export default function Header() {
           Aplicar filtros
         </Button>
 
-        <Button className="cursor-pointer hover:opacity-75">
-          <LogOut />
-          Logout
-        </Button>
+        <ModalLogout/>
       </div>
     </div>
   )

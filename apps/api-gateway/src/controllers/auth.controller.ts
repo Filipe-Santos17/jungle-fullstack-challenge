@@ -46,4 +46,18 @@ export class AuthController {
 
         return this.authService.sendNewAccessCookie(access_token, res)
     }
+
+    @Post("logout")
+    async logoutUser(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+        const tokens = {
+            access_token: req.cookies['access_token'],
+            refresh_token: req.cookies['refresh_token']
+        }
+
+        await lastValueFrom(
+            this.client.send("auth_logout", tokens)
+        )
+
+        return this.authService.deleteCookies(res)
+    }
 }

@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
-import { LoginRequest, RefreshRequest, RegisterRequest } from '@app/packages';
+import { AllTokensRequest, LoginRequest, RefreshRequest, RegisterRequest } from '@app/packages';
 
 import { AuthServiceService } from './auth-service.service';
 
@@ -22,5 +22,10 @@ export class AuthServiceController {
   @MessagePattern("auth_refresh")
   refreshToken(@Payload() token: RefreshRequest) {
     return this.authServiceService.refreshAuth(token);
+  }
+
+  @MessagePattern("auth_logout")
+  deleteTokens(@Payload() tokens: AllTokensRequest) {
+    return this.authServiceService.deleteAuth(tokens);
   }
 }

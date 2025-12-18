@@ -7,7 +7,7 @@ import { showToastError } from '@/utils/toast';
 import type { iMsgError } from '@/types/api';
 import type { iTasksCreate } from '@/types/tasks';
 
-export function usePostTask() {
+export default function usePostTask() {
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -18,12 +18,14 @@ export function usePostTask() {
                 return response.data;
             } catch (error) {
                 if (isAxiosError(error)) {
-                    const msgBackend = error.response?.data as iMsgError;
+                    const msgBackend = error.response?.data as iMsgError
 
-                    if (msgBackend?.statusCode === 404) return;
+                    if (typeof (msgBackend?.message) === 'string') {
+                        showToastError("Erro ao criar tasks!", msgBackend.message)
+                    }
 
-                    if (typeof msgBackend?.message === 'string') {
-                        showToastError('Erro ao criar task!', msgBackend.message);
+                    if (Array.isArray(msgBackend?.message)) {
+                        showToastError("Erro ao criar tasks!", msgBackend.message[0])
                     }
                 }
 

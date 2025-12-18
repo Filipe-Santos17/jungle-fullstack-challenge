@@ -42,16 +42,23 @@ export class AuthServiceService {
     return { user }
   }
 
-  sendNewAccessCookie(access_token: string, resp: Response){
+  sendNewAccessCookie(access_token: string, resp: Response) {
     const jwtExpirationMinutes = +this.configService.getOrThrow('JWT_EXPIRATION_MINUTES')
 
     const limitToken = jwtExpirationMinutes * 60 * 1000
-    
+
     resp.cookie("access_token", access_token, {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
       maxAge: limitToken,
     })
+  }
+
+  deleteCookies(resp: Response) {
+    resp.clearCookie('access_token');
+    resp.clearCookie('refresh_token');
+
+    return "ok"
   }
 }
