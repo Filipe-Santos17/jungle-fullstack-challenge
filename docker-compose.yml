@@ -7,12 +7,15 @@ services:
       dockerfile: ./apps/web/Dockerfile
       target: development
     ports:
-      - '3000:3000'
+      - "5173:5173"
+      - "4173:4173"
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
     environment:
       - NODE_ENV=development
     networks:
       - challenge-network
-    #command: npm run dev -- --host 0.0.0.0
 
   # API Gateway
   api-gateway:
@@ -22,12 +25,10 @@ services:
       dockerfile: ./apps/api-gateway/Dockerfile
       target: development
     ports:
-      - '3001:3001'
+      - "3001:3001"
     volumes:
       - .:/app
       - ./packages:/app/packages
-      - /app/node_modules
-      - /app/apps/api-gateway/node_modules
     environment:
       - NODE_ENV=development
       - PORT=3001
@@ -50,12 +51,10 @@ services:
       dockerfile: ./apps/auth-service/Dockerfile
       target: development
     ports:
-      - '3002:3002'
+      - "3002:3002"
     volumes:
       - .:/app
       - ./packages:/app/packages
-      - /app/node_modules
-      - /app/apps/auth-service/node_modules
     environment:
       - NODE_ENV=development
       - PORT=3002
@@ -75,12 +74,10 @@ services:
       dockerfile: ./apps/tasks-service/Dockerfile
       target: development
     ports:
-      - '3003:3003'
+      - "3003:3003"
     volumes:
       - .:/app
       - ./packages:/app/packages
-      - /app/node_modules
-      - /app/apps/tasks-service/node_modules
     environment:
       - NODE_ENV=development
       - PORT=3003
@@ -100,7 +97,7 @@ services:
       dockerfile: ./apps/notifications-service/Dockerfile
       target: development
     ports:
-      - '3004:3004'
+      - "3004:3004"
     volumes:
       - .:/app
       - ./packages:/app/packages
@@ -123,7 +120,7 @@ services:
     container_name: db
     attach: false
     ports:
-      - '5432:5432'
+      - "5432:5432"
     networks:
       - challenge-network
     restart: always
@@ -141,14 +138,14 @@ services:
     attach: false
     restart: always
     ports:
-      - '5672:5672'
-      - '15672:15672'
+      - "5672:5672"
+      - "15672:15672"
     networks:
       - challenge-network
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
-    volumes: ['rabbitmq_data:/var/lib/rabbitmq']
+    volumes: ["rabbitmq_data:/var/lib/rabbitmq"]
 
 volumes:
   postgres_data:

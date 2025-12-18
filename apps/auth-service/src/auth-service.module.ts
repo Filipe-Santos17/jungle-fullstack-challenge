@@ -23,7 +23,7 @@ import { DbModule, EntityUsers, EntityRefreshToken } from '@app/packages';
         // Rabbit
         RABBIT_MQ_URI: Joi.string().required(),
         RABBIT_MQ_AUTH_ENV: Joi.string().required(),
-        
+
         // Database
         PORT_DB: Joi.number().required(),
         HOST_DB: Joi.string().required(),

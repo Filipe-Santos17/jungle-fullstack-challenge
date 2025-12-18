@@ -36,7 +36,7 @@ import { NotificationsListener } from './listeners/notification-listener';
         JWT_REFRESH_EXPIRATION_DAYS: Joi.number().required(),
 
         // Enviroment
-        NODE_ENV: Joi.string().valid("dev", "prod").default("dev"),
+        NODE_ENV: Joi.string().valid("development", "production").default("development"),
       }),
       envFilePath: "./apps/api-gateway/.env"
     }),

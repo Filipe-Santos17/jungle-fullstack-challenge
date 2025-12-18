@@ -4,27 +4,27 @@ FROM node:${NODE_VERSION} AS development
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY apps/web/package*.json ./
 
 RUN npm install
 
-COPY . .
+COPY apps/web .
 
-EXPOSE 3000
+EXPOSE 5173
 
-CMD ["tail -f /dev/null"]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
 FROM node:${NODE_VERSION} AS production
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY apps/web/package*.json ./
 
 RUN --mount=type=cache,target=/root/.npm npm ci
 
-COPY . .
+COPY apps/web .
 
-EXPOSE 3000
+EXPOSE 4173
 
 RUN npm run build
 
