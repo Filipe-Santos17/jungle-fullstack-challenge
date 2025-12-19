@@ -1,5 +1,5 @@
-import { Button } from "../ui/button"
-import { ListFilter, LogOut } from "lucide-react"
+// import { Button } from "../ui/button"
+// import { ListFilter, LogOut } from "lucide-react"
 
 import ModalAddTask from "./tasks/modal-add-task"
 import ModalLogout from "./auth/modal-logout"
@@ -15,10 +15,10 @@ export default function Header() {
       <div className="flex gap-2 items-center justify-center">
         <ModalAddTask/>
 
-        <Button className="cursor-pointer hover:opacity-75">
+        {/* <Button className="cursor-pointer hover:opacity-75">
           <ListFilter />
           Aplicar filtros
-        </Button>
+        </Button> */}
 
         <ModalLogout/>
       </div>
